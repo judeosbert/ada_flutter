@@ -1,5 +1,6 @@
 import 'package:ada_flutter/ApiManager.dart';
 import 'package:ada_flutter/DependencyResult.dart';
+import 'package:ada_flutter/DonateButtonWidget.dart';
 import 'package:ada_flutter/InfoBoxWidget.dart';
 import 'package:ada_flutter/ReportIncorrectDataWidget.dart';
 import 'package:ada_flutter/SearchBarWidget.dart';
@@ -49,6 +50,12 @@ class _HomePageWidgetState extends State<HomePageWidget> {
                         Text(
                           "Android Dependency Analyzer",
                           style: TextStyle(color: Colors.white),
+                        ),
+                        Text(
+                          "Beta",
+                          style: TextStyle(fontSize:10,
+
+                              color: Colors.white),
                         )
                       ],
                     ),
@@ -117,12 +124,24 @@ class _HomePageWidgetState extends State<HomePageWidget> {
           ),
           Expanded(child: mainBody),
           Container(
-            decoration: BoxDecoration(
-              color: Colors.blue,
-              boxShadow: [BoxShadow()],
-            ),
-            child: Center(
-              child: Text("Created by Jude Osbert K"),
+            margin: EdgeInsets.only(bottom:10.0),
+            child: Stack(
+              children:[
+                  Align(
+                    alignment:Alignment.bottomCenter,
+                    child:Column(
+                      mainAxisSize: MainAxisSize.min,
+                      children: [
+                        DonateButton(),
+                        Text("Created by Jude Osbert K",
+                        style: TextStyle(
+                          color:Color(0xFFc2c2c2)
+                        ),),
+                      ],
+                    ),
+                  ),
+                  
+              ] 
             ),
           ),
         ],
@@ -188,7 +207,8 @@ class _HomePageWidgetState extends State<HomePageWidget> {
             style: TextStyle(
               fontSize: 20,
             ),
-          )
+          ),
+          DonateButton()
         ],
       ),
     );
@@ -232,25 +252,6 @@ class _HomePageWidgetState extends State<HomePageWidget> {
                   _openSendEmailTab();
                 }),
               ],
-            ),
-            SizedBox(
-              height: 50,
-            ),
-            Align(
-              alignment: Alignment.center,
-              child: FlatButton(
-                  color: Colors.green,
-                  onPressed: () {},
-                  child: Padding(
-                    padding: EdgeInsets.symmetric(vertical: 8, horizontal: 16),
-                    child: Container(
-                      child: Text(
-                        "Donate",
-                        style: TextStyle(
-                            color: Colors.white, fontWeight: FontWeight.w700),
-                      ),
-                    ),
-                  )),
             )
           ],
         ));
