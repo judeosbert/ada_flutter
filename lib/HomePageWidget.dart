@@ -1,6 +1,5 @@
 import 'package:ada_flutter/ApiManager.dart';
 import 'package:ada_flutter/DependencyResult.dart';
-import 'package:ada_flutter/DonateButtonWidget.dart';
 import 'package:ada_flutter/InfoBoxWidget.dart';
 import 'package:ada_flutter/ReportIncorrectDataWidget.dart';
 import 'package:ada_flutter/SearchBarWidget.dart';
@@ -132,7 +131,6 @@ class _HomePageWidgetState extends State<HomePageWidget> {
                     child:Column(
                       mainAxisSize: MainAxisSize.min,
                       children: [
-                        DonateButton(),
                         Text("Created by Jude Osbert K",
                         style: TextStyle(
                           color:Color(0xFFc2c2c2)
@@ -208,7 +206,6 @@ class _HomePageWidgetState extends State<HomePageWidget> {
               fontSize: 20,
             ),
           ),
-          DonateButton()
         ],
       ),
     );
