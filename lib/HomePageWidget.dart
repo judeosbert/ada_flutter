@@ -1,8 +1,12 @@
 import 'package:ada_flutter/ApiManager.dart';
 import 'package:ada_flutter/DependencyResult.dart';
 import 'package:ada_flutter/InfoBoxWidget.dart';
+import 'package:ada_flutter/RecentSearchesWidget.dart';
 import 'package:ada_flutter/ReportIncorrectDataWidget.dart';
 import 'package:ada_flutter/SearchBarWidget.dart';
+import 'package:ada_flutter/pages/InitialPageBody.dart';
+import 'package:ada_flutter/pages/LoadingPageBody.dart';
+import 'package:ada_flutter/pages/ResultContentBody.dart';
 import 'package:flushbar/flushbar.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
@@ -61,66 +65,92 @@ class _HomePageWidgetState extends State<HomePageWidget> {
                   ),
                   Expanded(
                     flex: 8,
-                    child: Container(
-                      margin: EdgeInsets.symmetric(horizontal: 16.0),
-                      decoration: BoxDecoration(color: Colors.white),
-                      child: Padding(
-                          padding: const EdgeInsets.symmetric(horizontal: 16.0),
-                          child: SearchBarWidget(textEditingController, () {
-                            final dependency = textEditingController.text;
-                            if (dependency.length == 0) {
-                              Flushbar(
-                                title: "Error",
-                                message: "The package is empty",
-                                backgroundColor: Colors.red,
-                                duration: Duration(seconds: 2),
-                              )..show(context);
-                              return;
-                            }
-                            ApiManager()
-                                .getDependencyDetails(dependency).asStream()
-                                .listen((value) {
-                              if (value == null) {
-                                Flushbar(
-                                  title: "Error",
-                                  message: "The package is empty",
-                                  backgroundColor: Colors.red,
-                                  duration: Duration(seconds: 2),
-                                )..show(context);
-                                setState(() {
-                                  pageState = PageState.INITIAL;
-                                });
-                              } else {
-                                setState(() {
-                                  dependencyResult = value;
-                                  pageState = PageState.RESULT;
-                                });
-                              }
-                            });
-                            setState(() {
-                              pageState = PageState.LOADING;
-                            });
-                          })),
-                    ),
-                  ),
-                  Expanded(
-                    flex: 2,
-                    child: Row(
+                    child: Column(
                       mainAxisSize: MainAxisSize.min,
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
-                        Text(
-                          "Powered by Flutter and Dart",
-                          textAlign: TextAlign.center,
-                          style: TextStyle(color: Colors.white),
+                        Container(
+                          margin: EdgeInsets.symmetric(horizontal: 16.0),
+                          decoration: BoxDecoration(color: Colors.white),
+                          child: Padding(
+                              padding: const EdgeInsets.symmetric(horizontal: 16.0),
+                              child: SearchBarWidget(textEditingController, () {
+                                final dependency = textEditingController.text;
+                                if (dependency.length == 0) {
+                                  Flushbar(
+                                    title: "Error",
+                                    message: "The package is empty",
+                                    backgroundColor: Colors.red,
+                                    duration: Duration(seconds: 2),
+                                  )..show(context);
+                                  return;
+                                }
+                                ApiManager()
+                                    .getDependencyDetails(dependency).asStream()
+                                    .listen((value) {
+                                  if (value == null) {
+                                    Flushbar(
+                                      title: "Error",
+                                      message: "The package is empty",
+                                      backgroundColor: Colors.red,
+                                      duration: Duration(seconds: 2),
+                                    )..show(context);
+                                    setState(() {
+                                      pageState = PageState.INITIAL;
+                                    });
+                                  } else {
+                                    setState(() {
+                                      dependencyResult = value;
+                                      pageState = PageState.RESULT;
+                                    });
+                                  }
+                                });
+                                setState(() {
+                                  pageState = PageState.LOADING;
+                                });
+                              })),
                         ),
+                        Container(
+                          margin: EdgeInsets.only(left: 16.0,top: 10.0),
+                          child: Text(
+                            "example: com.greedygame.sdkx:core:0.0.71",
+                          textAlign: TextAlign.start,
+                          style: TextStyle(
+                            color: Colors.white
+                          ),
+                          ),
+                        ),
+                        Container(
+                            margin: EdgeInsets.only(left: 16.0),
+                            child: Text("Doesn't support annotation processors.\n All dependencies are interpreted as `implementation` ",
+                              textAlign: TextAlign.start,
+                              style: TextStyle(
+                                  color: Colors.white
+                              ),))
+
                       ],
+                    ),
+                  ),
+                  Align(
+                    alignment: Alignment.topCenter,
+                    child: Text(
+                      "Powered by Flutter and Dart",
+                      textAlign: TextAlign.center,
+                      style: TextStyle(color: Colors.white),
                     ),
                   ),
                 ],
               ),
             ),
           ),
+          SizedBox.fromSize(
+              size: Size.fromHeight(50.0),
+              child: RecentSearchesWidget(onClick: (dependency){
+                setState(() {
+                  pageState = PageState.RESULT;
+                  dependencyResult = dependency;
+                });
+              },)),
           Expanded(child: mainBody),
           Container(
             margin: EdgeInsets.only(bottom:10.0),
@@ -150,118 +180,19 @@ class _HomePageWidgetState extends State<HomePageWidget> {
   Widget get mainBody {
     switch (pageState) {
       case PageState.INITIAL:
-        return initialContentBody;
+        return InitialPageBody();
         break;
       case PageState.LOADING:
-        return loadingContentBody;
+        return LoadingPageBody();
         break;
       default:
-        return resultContentBody;
+        return ResultContentBody(dependencyResult);
         break;
     }
   }
 
-  Widget get initialContentBody {
-    return Align(
-      alignment: Alignment.center,
-      child: Column(
-        mainAxisSize: MainAxisSize.min,
-        children: [
-          Image.network(
-            "https://i.ibb.co/6v0p1pm/waiting.png",
-            height: 265,
-            width: 474,
-          ),
-          SizedBox(
-            height: 50,
-          ),
-          Text(
-            "Waiting for you to search",
-            style: TextStyle(
-              fontSize: 20,
-            ),
-          )
-        ],
-      ),
-    );
-  }
 
-  Widget get loadingContentBody {
-    return Align(
-      alignment: Alignment.center,
-      child: Column(
-        mainAxisSize: MainAxisSize.min,
-        children: [
-          Image.network(
-            "https://i.ibb.co/bKvJ84S/searching.gif",
-            height: 265,
-            width: 474,
-          ),
-          SizedBox(
-            height: 50,
-          ),
-          Text(
-            "Hang on, this might take some moments. You can consider donating so that I can upgrade the servers",
-            style: TextStyle(
-              fontSize: 20,
-            ),
-          ),
-        ],
-      ),
-    );
-  }
 
-  Widget get resultContentBody {
-    return Container(
-        margin: EdgeInsets.symmetric(horizontal: 64),
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.stretch,
-          mainAxisSize: MainAxisSize.min,
-          children: [
-            SizedBox(
-              height: 76,
-            ),
-            Text(
-              "Package Details",
-              style: TextStyle(fontSize: 14, color: Color(0xff626262)),
-            ),
-            Text(
-              dependencyResult.completePackageName,
-              style: TextStyle(
-                fontWeight: FontWeight.w700,
-                fontSize: 36,
-              ),
-            ),
-            SizedBox(
-              height: 57,
-            ),
-            Row(
-              mainAxisAlignment: MainAxisAlignment.center,
-              mainAxisSize: MainAxisSize.min,
-              children: [
-                InfoBoxWidget(
-                    "Size In MB", dependencyResult.sizeInMB.toString()),
-                InfoBoxWidget(
-                    "Size In Bytes", dependencyResult.sizeInBytes.toString()),
-                InfoBoxWidget(
-                    "Last updated time", dependencyResult.formattedLastUpdate),
-                ReportIncorrectDataWidget((){
-                  _openSendEmailTab();
-                }),
-              ],
-            )
-          ],
-        ));
-  }
-
-  void _openSendEmailTab() async{
-   final url =  "mailto:judeosby@gmail.com?subject=Invalid%20Data%20for ${dependencyResult.completePackageName}";
-   if(await canLaunch(url)){
-     await launch(url);
-   }else{
-     print("Cannot launch url");
-   }
-  }
 }
 
 enum PageState { INITIAL, LOADING, RESULT }
