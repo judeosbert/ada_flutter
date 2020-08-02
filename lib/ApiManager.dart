@@ -8,7 +8,7 @@ class ApiManager {
   static final ApiManager _instance = ApiManager._internal();
   static final _LOCAL_API = "http://localhost:8888/";
   static final _PROD_API = "http://68.183.90.53:8888/";
-  static bool isDebug = true;
+  static bool isDebug = false;
 
   static String get BASE_URL  => isDebug ? _LOCAL_API : _PROD_API;
 
