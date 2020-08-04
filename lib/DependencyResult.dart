@@ -11,7 +11,7 @@ class DependencyResult {
   bool isSuccess;
 
   String get completePackageName => "$domain:$module:$version";
-  String  get sizeInMB => (sizeInBytes/(1024*1024)).toStringAsFixed(2);
+  String  get sizeInMB => (sizeInBytes/(1000*1000)).toStringAsFixed(2);
   String get formattedLastUpdate {
     final localTime = lastUpdate.toLocal();
     final String formattedDate = DateFormat.yMMMMd().format(localTime);
