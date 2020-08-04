@@ -1,4 +1,5 @@
 import 'package:ada_flutter/DependencyResult.dart';
+import 'package:ada_flutter/FeedbackWidget.dart';
 import 'package:flutter/material.dart';
 import 'package:url_launcher/url_launcher.dart';
 
@@ -46,6 +47,9 @@ class ResultContentBody extends StatelessWidget {
                 ReportIncorrectDataWidget((){
                   _openSendEmailTab();
                 }),
+                FeedbackWidget((){
+                  _openSendFeedbackEmailTab();
+                })
               ],
             )
           ],
@@ -53,6 +57,14 @@ class ResultContentBody extends StatelessWidget {
   }
   void _openSendEmailTab() async{
     final url =  "mailto:judeosby@gmail.com?subject=Invalid%20Data%20for ${dependencyResult.completePackageName}";
+    if(await canLaunch(url)){
+      await launch(url);
+    }else{
+      print("Cannot launch url");
+    }
+  }
+  void _openSendFeedbackEmailTab() async{
+    final url =  "mailto:judeosby@gmail.com?subject=Feedback/Suggestion";
     if(await canLaunch(url)){
       await launch(url);
     }else{

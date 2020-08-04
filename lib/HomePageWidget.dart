@@ -25,6 +25,7 @@ class _HomePageWidgetState extends State<HomePageWidget> {
   final SnackBar invalidPackageInputBar =
       SnackBar(content: Text("The package is empty"));
   TextEditingController textEditingController = TextEditingController();
+  TextEditingController repoTextEditingController = TextEditingController();
   PageState pageState = PageState.INITIAL;
   bool showShowChangeLogPopup = false;
 
@@ -87,9 +88,22 @@ class _HomePageWidgetState extends State<HomePageWidget> {
                           decoration: BoxDecoration(color: Colors.white),
                           child: Padding(
                               padding:
+                              const EdgeInsets.symmetric(horizontal: 16.0),
+                              child: SearchBarWidget(
+                                  "(Optional) repository eg: maven { url 'https://maven.juspay.in/jp-build-packages/release/' }",
+                                  repoTextEditingController,null,noAction: true,)),
+                        ),
+                        Container(
+                          margin: EdgeInsets.symmetric(horizontal: 16.0),
+                          decoration: BoxDecoration(color: Colors.white),
+                          child: Padding(
+                              padding:
                                   const EdgeInsets.symmetric(horizontal: 16.0),
-                              child: SearchBarWidget(textEditingController, () {
+                              child: SearchBarWidget(
+                                  "Search with full package name ex: com.example.product:module:version",
+                                  textEditingController, () {
                                 final dependency = textEditingController.text;
+                                final repo = repoTextEditingController.text;
                                 if (dependency.length == 0) {
                                   Flushbar(
                                     title: "Error",
@@ -100,7 +114,7 @@ class _HomePageWidgetState extends State<HomePageWidget> {
                                   return;
                                 }
                                 ApiManager()
-                                    .getDependencyDetails(dependency)
+                                    .getDependencyDetails(repo,dependency)
                                     .asStream()
                                     .listen((value) {
                                   if (value == null) {
@@ -123,11 +137,11 @@ class _HomePageWidgetState extends State<HomePageWidget> {
                                 setState(() {
                                   pageState = PageState.LOADING;
                                 });
-                              })),
+                              },noAction: false,)),
                         ),
                         Container(
                           margin: EdgeInsets.only(left: 16.0, top: 10.0),
-                          child: Text(
+                          child: SelectableText(
                             "example: com.greedygame.sdkx:core:0.0.71",
                             textAlign: TextAlign.start,
                             style: TextStyle(color: Colors.white),

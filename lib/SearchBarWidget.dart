@@ -1,9 +1,11 @@
 import 'package:flutter/material.dart';
 
 class SearchBarWidget extends StatefulWidget {
-  SearchBarWidget(this.textEditingController, this.onSearch);
+  SearchBarWidget(this.hint,this.textEditingController, this.onSearch,{this.noAction});
 
   final Function onSearch;
+  final String hint;
+  final bool noAction;
   final TextEditingController textEditingController;
 
   @override
@@ -36,19 +38,22 @@ class _SearchBarWidgetState extends State<SearchBarWidget> {
             },
             decoration: InputDecoration(
                 border: InputBorder.none,
-                hintText:
-                    "Search with full package name ex: com.example.product:module:version"),
+                hintText:widget.hint
+            ),
           ),
         ),
-        FlatButton(
+        !widget.noAction?FlatButton(
+          color: Colors.blue,
+            textColor: Colors.white,
             onPressed: () {
-              if (isSearchBoxEmpty) {
-                widget.onSearch();
-              } else {
-                _resetState();
-              }
+//              if (isSearchBoxEmpty) {
+//                widget.onSearch();
+//              } else {
+//                _resetState();
+//              }
+            widget.onSearch();
             },
-            child: isSearchBoxEmpty ? Text("Search") : Icon(Icons.close))
+            child: true ? Text("Search") : Icon(Icons.close)):Container()
       ],
     );
   }

@@ -21,9 +21,16 @@ class ApiManager {
 
   ApiManager._internal();
 
-  Future<DependencyResult> getDependencyDetails(String package) async {
+  Future<DependencyResult> getDependencyDetails(String repo, String package) async {
     final url = DETAIL_API + package;
-    final response = await http.get(url);
+    repo = repo.replaceAll("\"", "'");
+    MapEntry<String,String> mapEntry = MapEntry<String,String>("repo", repo);
+    Map<String,String> requestBody = Map.fromEntries([mapEntry]);
+    final response = await http.post(url,
+        headers: <String, String>{
+          'Content-Type': 'application/json; charset=UTF-8',
+        },
+        body: jsonEncode(requestBody));
     if (response.statusCode == 200) {
       Map<String, dynamic> responseMap = json.decode(response.body);
       print(responseMap);
