@@ -7,10 +7,13 @@ import 'package:ada_flutter/SearchBarWidget.dart';
 import 'package:ada_flutter/pages/InitialPageBody.dart';
 import 'package:ada_flutter/pages/LoadingPageBody.dart';
 import 'package:ada_flutter/pages/ResultContentBody.dart';
+import 'package:ada_flutter/pages/SharedPrefHelper.dart';
 import 'package:flushbar/flushbar.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:url_launcher/url_launcher.dart';
+
+import 'ChangeListPopup.dart';
 
 class HomePageWidget extends StatefulWidget {
   @override
@@ -23,6 +26,18 @@ class _HomePageWidgetState extends State<HomePageWidget> {
       SnackBar(content: Text("The package is empty"));
   TextEditingController textEditingController = TextEditingController();
   PageState pageState = PageState.INITIAL;
+  bool showShowChangeLogPopup = false;
+
+  @override
+  void initState() {
+    super.initState();
+    Future.delayed(Duration.zero, () async {
+      bool flag = await SharedPrefHelper().shouldShowPopup();
+      setState(() {
+        showShowChangeLogPopup = flag;
+      });
+    });
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -56,9 +71,7 @@ class _HomePageWidgetState extends State<HomePageWidget> {
                         ),
                         Text(
                           "Beta",
-                          style: TextStyle(fontSize:10,
-
-                              color: Colors.white),
+                          style: TextStyle(fontSize: 10, color: Colors.white),
                         )
                       ],
                     ),
@@ -73,7 +86,8 @@ class _HomePageWidgetState extends State<HomePageWidget> {
                           margin: EdgeInsets.symmetric(horizontal: 16.0),
                           decoration: BoxDecoration(color: Colors.white),
                           child: Padding(
-                              padding: const EdgeInsets.symmetric(horizontal: 16.0),
+                              padding:
+                                  const EdgeInsets.symmetric(horizontal: 16.0),
                               child: SearchBarWidget(textEditingController, () {
                                 final dependency = textEditingController.text;
                                 if (dependency.length == 0) {
@@ -86,7 +100,8 @@ class _HomePageWidgetState extends State<HomePageWidget> {
                                   return;
                                 }
                                 ApiManager()
-                                    .getDependencyDetails(dependency).asStream()
+                                    .getDependencyDetails(dependency)
+                                    .asStream()
                                     .listen((value) {
                                   if (value == null) {
                                     Flushbar(
@@ -111,23 +126,20 @@ class _HomePageWidgetState extends State<HomePageWidget> {
                               })),
                         ),
                         Container(
-                          margin: EdgeInsets.only(left: 16.0,top: 10.0),
+                          margin: EdgeInsets.only(left: 16.0, top: 10.0),
                           child: Text(
                             "example: com.greedygame.sdkx:core:0.0.71",
-                          textAlign: TextAlign.start,
-                          style: TextStyle(
-                            color: Colors.white
-                          ),
+                            textAlign: TextAlign.start,
+                            style: TextStyle(color: Colors.white),
                           ),
                         ),
                         Container(
                             margin: EdgeInsets.only(left: 16.0),
-                            child: Text("Doesn't support annotation processors.\n All dependencies are interpreted as `implementation` ",
+                            child: Text(
+                              "Doesn't support annotation processors.\n All dependencies are interpreted as `implementation` ",
                               textAlign: TextAlign.start,
-                              style: TextStyle(
-                                  color: Colors.white
-                              ),))
-
+                              style: TextStyle(color: Colors.white),
+                            ))
                       ],
                     ),
                   ),
@@ -143,34 +155,49 @@ class _HomePageWidgetState extends State<HomePageWidget> {
               ),
             ),
           ),
-          SizedBox.fromSize(
-              size: Size.fromHeight(50.0),
-              child: RecentSearchesWidget(onClick: (dependency){
-                setState(() {
-                  pageState = PageState.RESULT;
-                  dependencyResult = dependency;
-                });
-              },)),
+          Stack(children: [
+            SizedBox.fromSize(
+                size: Size.fromHeight(50.0),
+                child: RecentSearchesWidget(
+                  onClick: (dependency) {
+                    setState(() {
+                      pageState = PageState.RESULT;
+                      dependencyResult = dependency;
+                    });
+                  },
+                )),
+            Align(
+                alignment: Alignment.centerRight,
+                child: showShowChangeLogPopup
+                    ? Container(
+                        margin: EdgeInsets.only(right: 10, top: 10),
+                        child: ChangeListPopup(
+                          onDismiss: () {
+                            SharedPrefHelper().closeChangeLogPopup();
+                            setState(() {
+                              showShowChangeLogPopup = false;
+                            });
+                          },
+                        ))
+                    : Container())
+          ]),
           Expanded(child: mainBody),
           Container(
-            margin: EdgeInsets.only(bottom:10.0),
-            child: Stack(
-              children:[
-                  Align(
-                    alignment:Alignment.bottomCenter,
-                    child:Column(
-                      mainAxisSize: MainAxisSize.min,
-                      children: [
-                        Text("Created by Jude Osbert K",
-                        style: TextStyle(
-                          color:Color(0xFFc2c2c2)
-                        ),),
-                      ],
+            margin: EdgeInsets.only(bottom: 10.0),
+            child: Stack(children: [
+              Align(
+                alignment: Alignment.bottomCenter,
+                child: Column(
+                  mainAxisSize: MainAxisSize.min,
+                  children: [
+                    Text(
+                      "Created by Jude Osbert K",
+                      style: TextStyle(color: Color(0xFFc2c2c2)),
                     ),
-                  ),
-                  
-              ] 
-            ),
+                  ],
+                ),
+              ),
+            ]),
           ),
         ],
       ),
@@ -190,9 +217,6 @@ class _HomePageWidgetState extends State<HomePageWidget> {
         break;
     }
   }
-
-
-
 }
 
 enum PageState { INITIAL, LOADING, RESULT }
