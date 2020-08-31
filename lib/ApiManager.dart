@@ -83,4 +83,15 @@ class ApiManager {
     });
     return resultStream.stream;
   }
+
+  Future<int> getStats() async {
+    final response = await http.get(STAT_API);
+    if(response.statusCode == 200){
+      final jsonBody = jsonDecode(response.body);
+      return jsonBody["indexCount"] as int;
+    }
+    else {
+      return -1;
+    }
+  }
 }

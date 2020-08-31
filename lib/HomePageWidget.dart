@@ -14,6 +14,7 @@ import 'package:flutter/material.dart';
 import 'package:url_launcher/url_launcher.dart';
 
 import 'ChangeListPopup.dart';
+import 'StatBox.dart';
 
 class HomePageWidget extends StatefulWidget {
   @override
@@ -159,10 +160,17 @@ class _HomePageWidgetState extends State<HomePageWidget> {
                   ),
                   Align(
                     alignment: Alignment.topCenter,
-                    child: Text(
-                      "Powered by Flutter and Dart",
-                      textAlign: TextAlign.center,
-                      style: TextStyle(color: Colors.white),
+                    child: Column(
+                      mainAxisSize: MainAxisSize.min,
+                      children: [
+                        StatBox(),
+                        SizedBox.fromSize(size: Size(0,10),),
+                        Text(
+                          "Powered by Flutter and Dart",
+                          textAlign: TextAlign.center,
+                          style: TextStyle(color: Colors.white),
+                        )
+                      ],
                     ),
                   ),
                 ],
