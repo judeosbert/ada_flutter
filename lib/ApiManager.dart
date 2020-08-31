@@ -16,6 +16,7 @@ class ApiManager {
   static final DETAIL_API = BASE_URL + "details/";
   static final STATUS_API = BASE_URL + "status/";
   static final RECENTS_API = BASE_URL + "recent";
+  static final STAT_API = BASE_URL +"stat";
 
   factory ApiManager() => _instance;
 
